@@ -18,7 +18,7 @@ type ImageResourcesConfig struct {
 	ElevatorImagePath string
 }
 
-var Config = ImageResourcesConfig{}
+var Config = &ImageResourcesConfig{}
 
 func InitConfig(){
 	viper.SetConfigFile("./config.yml")
@@ -27,10 +27,11 @@ func InitConfig(){
 		log.Println("读取配置文件出错，err: ", err)
 		os.Exit(1)
 	}
-	err = viper.Unmarshal(&Config)
+	err = viper.Unmarshal(Config)
 	if err != nil {
 		log.Println("解析配置文件出错，err: ", err)
 		os.Exit(1)
 	}
+	log.Println("init config file success，content: %#v", *Config)
 }
 
