@@ -42,7 +42,7 @@ func BuildKafkaMessage(communityId, deviceId string) (msg Message){
 		Payload:     map[string]interface{}{},
 		Pts:         0,
 	}
-	detectFile := <-images.ImageQueue
+	detectFile := <-images.FireEscapeImageQueue
 	pgm := detectFile.PGM
 	width, height := images.GetImageWidthAndHeight(detectFile.JPG)
 	msg.JpgPath = detectFile.JPG
@@ -67,8 +67,10 @@ func SendKafkaMessage(w *kafka.Writer, msg Message) {
 }
 
 func ForeverWriterCarInfoMsg() {
-	// 生产jpg
-	go images.ProduceJpgImage()
+	// 生产消防通道需要的图片jpg+pgm
+	go images.ProduceFireEscapeJpgImage()
+	// 生产地上场景的图片（从某一个目录随机获取一张图片）
+	go images.ProduceGroundJpgImage()
 	// 定时删除生成的jpg
 	go images.ClearImage(config.Config.FireEscape.FireBasePath + "/jpg")
 

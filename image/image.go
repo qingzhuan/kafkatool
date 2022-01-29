@@ -25,7 +25,8 @@ var (
 	RandomImagePath 		= config.Config.GroundRandomImagePath
 )
 
-var ImageQueue = make(chan DetectFile, 100)
+var FireEscapeImageQueue = make(chan DetectFile, 10)
+var GroundImageQueue = make(chan DetectFile, 500)
 
 type DetectFile struct {
 	PGM string
@@ -54,7 +55,7 @@ func GetImageList(path string) (fileList []string) {
 	return
 }
 
-func GetRandImage(path string) (detectFile DetectFile) {
+func GetRandomImage(path string) (detectFile DetectFile) {
 	imageList := GetImageList(path)
 	lenght := len(imageList)
 	if lenght < 1 {
@@ -87,7 +88,7 @@ func GetImageWidthAndHeight(name string) (width, height int) {
 	return
 }
 
-func ProduceJpgImage() {
+func ProduceFireEscapeJpgImage() {
 	jpgPath := filepath.Join(config.Config.FireEscape.FireBasePath, "jpg")
 	if !common.DirIsExist(jpgPath) {
 		_ = os.Mkdir(jpgPath, 0644)
@@ -112,14 +113,24 @@ func ProduceJpgImage() {
 			detectFile.PGM = config.Config.FireEscape.PgmPath
 			detectFile.JPG = dstName
 
-			ImageQueue <- detectFile
+			FireEscapeImageQueue <- detectFile
 		}
 		// 其他随机图片，用于智能巡查掉报警
 		for i := 0; i < 60 * 5; i++ {
-			detectFile := GetRandImage(config.Config.GroundRandomImagePath)
-			ImageQueue <- detectFile
+			detectFile := <- GroundImageQueue
+			FireEscapeImageQueue <- detectFile
 		}
 	}
+}
+
+func ProduceGroundJpgImage() {
+	groundJpgImagePath := config.Config.GroundRandomImagePath
+	for {
+		detectFile := GetRandomImage(groundJpgImagePath)
+		GroundImageQueue <- detectFile
+	}
+
+
 }
 
 func ClearImage(path string) {
