@@ -20,6 +20,7 @@ const (
 	FireEscapeAlarmBasePath = "/mnt/data/test_data/car"
 	FireEscapeAlarmJpg      = FireEscapeAlarmBasePath + "/image_1643158302.308963776.jpg"
 	FireEscapeAlarmPgm      = FireEscapeAlarmBasePath + "/image_1643158302.308963776.pgm"
+	RandomImagePath = "/mnt/data/test_data/e75fd70bccb00024a8950a4980181ae0/"
 )
 
 var ImageQueue = make(chan DetectFile, 100)
@@ -51,17 +52,17 @@ func GetImageList(path string) (fileList []string) {
 	return
 }
 
-func GetRandImage(path string) (detectFile DetectFile){
+func GetRandImage(path string) (detectFile DetectFile) {
 	imageList := GetImageList(path)
-	length := len(imageList)
-	if length < 1 {
+	lenght := len(imageList)
+	if lenght < 1 {
 		log.Printf("从%s获取图片异常\n", path)
 		return
 	}
 	rand.Seed(time.Now().UnixNano())
-	intn := rand.Intn(length)
-	detectFile.PGM = imageList[intn] + ".pgm"
+	intn := rand.Intn(lenght)
 	detectFile.JPG = imageList[intn]
+	detectFile.PGM = imageList[intn] + ".pgm"
 	return
 }
 
@@ -90,22 +91,30 @@ func ProduceJpgImage() {
 	go ClearImage(path + "/jpg")
 
 	for {
-		dstName := path + "/jpg/" + common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
-		readFile, err := ioutil.ReadFile(FireEscapeAlarmJpg) // 能产生报警的图片
-		if err != nil {
-			log.Println("读取文件失败，err：", err)
-			continue
-		}
-		err = ioutil.WriteFile(dstName, readFile, 0644)
-		if err != nil {
-			log.Println("复制文件失败，err：", err)
-			continue
-		}
-		var detectFile DetectFile
-		detectFile.PGM = FireEscapeAlarmPgm
-		detectFile.JPG = dstName
+		// 消防通道报警的图片
+		for i := 0; i < 60*5; i++ {
+			dstName := path + "/jpg/" + common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
+			readFile, err := ioutil.ReadFile(FireEscapeAlarmJpg) // 能产生报警的图片
+			if err != nil {
+				log.Println("读取文件失败，err：", err)
+				continue
+			}
+			err = ioutil.WriteFile(dstName, readFile, 0644)
+			if err != nil {
+				log.Println("复制文件失败，err：", err)
+				continue
+			}
+			var detectFile DetectFile
+			detectFile.PGM = FireEscapeAlarmPgm
+			detectFile.JPG = dstName
 
-		ImageQueue <- detectFile
+			ImageQueue <- detectFile
+		}
+		// 其他随机图片，用于智能巡查掉报警
+		for i := 0; i < 60*5; i++ {
+			detectFile := GetRandImage(RandomImagePath)
+			ImageQueue <- detectFile
+		}
 	}
 }
 

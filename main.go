@@ -12,6 +12,6 @@ func init() {
 
 func main() {
 	go images.ProduceJpgImage()
-	kafkahandler.ForeverWriterCarInfoMsg()
+	go kafkahandler.ForeverWriterCarInfoMsg()
 	select {}
 }
