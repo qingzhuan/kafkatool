@@ -88,7 +88,7 @@ func GetImageWidthAndHeight(name string) (width, height int) {
 }
 
 func ProduceJpgImage() {
-
+	log.Println("ProduceJpgImage FireEscapeAlarmBasePath", FireEscapeAlarmBasePath)
 	jpgPath := filepath.Join(FireEscapeAlarmBasePath, "jpg")
 	if !common.DirIsExist(jpgPath) {
 		_ = os.Mkdir(jpgPath, 0644)

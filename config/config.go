@@ -32,6 +32,6 @@ func InitConfig(){
 		log.Println("解析配置文件出错，err: ", err)
 		os.Exit(1)
 	}
-	log.Println("init config file success，content: %#v", *Config)
+	log.Printf("init config file success，content: %#v\n", *Config)
 }
 
