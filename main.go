@@ -10,6 +10,6 @@ func init() {
 }
 
 func main() {
-	go kafkahandler.ForeverWriterCarInfoMsg()
+	kafkahandler.ForeverWriterCarInfoMsg()
 	select {}
 }

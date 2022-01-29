@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/segmentio/kafka-go"
 	"kafkatool/common"
+	"kafkatool/config"
 	"kafkatool/constant"
 	"kafkatool/device"
 	images "kafkatool/image"
@@ -67,13 +68,13 @@ func SendKafkaMessage(w *kafka.Writer, msg Message) {
 
 func ForeverWriterCarInfoMsg() {
 	// 生产jpg
-	go images.ProduceJpgImage()
+	images.ProduceJpgImage()
 	// 定时删除生成的jpg
-	go images.ClearImage(images.FireEscapeAlarmBasePath + "/jpg")
+	go images.ClearImage(config.Config.FireEscape.FireBasePath + "/jpg")
 
 	w := KafkaHandler.TopicWriterHandler[constant.InfoDecodeTopic]
 	onlineDevice := deviceManager.GetOneOnlineDevice(constant.GroundSceneType)
-	onlineDevice = deviceManager.GetOneOnlineDevice(constant.GroundSceneType)
+	//onlineDevice = deviceManager.GetOneOnlineDevice(constant.GroundSceneType)
 	fmt.Println("onlineDevice", deviceManager.OnlineDevice)
 	for {
 		msg := BuildKafkaMessage(onlineDevice.CommunityId, onlineDevice.DeviceId)

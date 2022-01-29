@@ -88,8 +88,7 @@ func GetImageWidthAndHeight(name string) (width, height int) {
 }
 
 func ProduceJpgImage() {
-	log.Println("ProduceJpgImage FireEscapeAlarmBasePath", FireEscapeAlarmBasePath)
-	jpgPath := filepath.Join(FireEscapeAlarmBasePath, "jpg")
+	jpgPath := filepath.Join(config.Config.FireEscape.FireBasePath, "jpg")
 	if !common.DirIsExist(jpgPath) {
 		_ = os.Mkdir(jpgPath, 0644)
 	}
@@ -99,7 +98,7 @@ func ProduceJpgImage() {
 		for i := 0; i < 60 * 5; i++ {
 			fileName := common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
 			dstName := filepath.Join(jpgPath, fileName)
-			readFile, err := ioutil.ReadFile(FireEscapeAlarmJpg) // 能产生报警的图片
+			readFile, err := ioutil.ReadFile(config.Config.FireEscape.JpgPath) // 能产生报警的图片
 			if err != nil {
 				log.Println("读取文件失败，err：", err)
 				continue
@@ -110,14 +109,14 @@ func ProduceJpgImage() {
 				continue
 			}
 			var detectFile DetectFile
-			detectFile.PGM = FireEscapeAlarmPgm
+			detectFile.PGM = config.Config.FireEscape.PgmPath
 			detectFile.JPG = dstName
 
 			ImageQueue <- detectFile
 		}
 		// 其他随机图片，用于智能巡查掉报警
 		for i := 0; i < 60 * 5; i++ {
-			detectFile := GetRandImage(RandomImagePath)
+			detectFile := GetRandImage(config.Config.GroundRandomImagePath)
 			ImageQueue <- detectFile
 		}
 	}
