@@ -68,7 +68,7 @@ func SendKafkaMessage(w *kafka.Writer, msg Message) {
 
 func ForeverWriterCarInfoMsg() {
 	// 生产jpg
-	images.ProduceJpgImage()
+	go images.ProduceJpgImage()
 	// 定时删除生成的jpg
 	go images.ClearImage(config.Config.FireEscape.FireBasePath + "/jpg")
 
