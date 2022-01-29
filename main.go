@@ -2,7 +2,6 @@ package main
 
 import (
 	"kafkatool/config"
-	kafkahandler "kafkatool/kafka"
 )
 
 func init() {
@@ -10,6 +9,6 @@ func init() {
 }
 
 func main() {
-	go kafkahandler.ForeverWriterCarInfoMsg()
+	//go kafkahandler.ForeverWriterCarInfoMsg()
 	select {}
 }
