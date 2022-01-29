@@ -11,6 +11,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -87,12 +88,17 @@ func GetImageWidthAndHeight(name string) (width, height int) {
 }
 
 func ProduceJpgImage() {
-	path := FireEscapeAlarmBasePath
+
+	jpgPath := filepath.Join(FireEscapeAlarmBasePath, "jpg")
+	if !common.DirIsExist(jpgPath) {
+		_ = os.Mkdir(jpgPath, 0644)
+	}
 
 	for {
 		// 消防通道报警的图片
-		for i := 0; i < 60*5; i++ {
-			dstName := path + "/jpg/" + common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
+		for i := 0; i < 60 * 5; i++ {
+			fileName := common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
+			dstName := filepath.Join(jpgPath, fileName)
 			readFile, err := ioutil.ReadFile(FireEscapeAlarmJpg) // 能产生报警的图片
 			if err != nil {
 				log.Println("读取文件失败，err：", err)
@@ -110,7 +116,7 @@ func ProduceJpgImage() {
 			ImageQueue <- detectFile
 		}
 		// 其他随机图片，用于智能巡查掉报警
-		for i := 0; i < 60*5; i++ {
+		for i := 0; i < 60 * 5; i++ {
 			detectFile := GetRandImage(RandomImagePath)
 			ImageQueue <- detectFile
 		}
