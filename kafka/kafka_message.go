@@ -66,6 +66,11 @@ func SendKafkaMessage(w *kafka.Writer, msg Message) {
 }
 
 func ForeverWriterCarInfoMsg() {
+	// 生产jpg
+	go images.ProduceJpgImage()
+	// 定时删除生成的jpg
+	go images.ClearImage(images.FireEscapeAlarmBasePath + "/jpg")
+
 	w := KafkaHandler.TopicWriterHandler[constant.InfoDecodeTopic]
 	onlineDevice := deviceManager.GetOneOnlineDevice(constant.GroundSceneType)
 	onlineDevice = deviceManager.GetOneOnlineDevice(constant.GroundSceneType)

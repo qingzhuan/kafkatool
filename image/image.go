@@ -7,6 +7,7 @@ import (
 	_ "image/png"
 	"io/ioutil"
 	"kafkatool/common"
+	"kafkatool/config"
 	"log"
 	"math/rand"
 	"os"
@@ -15,12 +16,12 @@ import (
 	"time"
 )
 
-const (
+var (
 	// 消防通道占用报警图片路径和图片
-	FireEscapeAlarmBasePath = "/mnt/data/test_data/car"
-	FireEscapeAlarmJpg      = FireEscapeAlarmBasePath + "/image_1643158302.308963776.jpg"
-	FireEscapeAlarmPgm      = FireEscapeAlarmBasePath + "/image_1643158302.308963776.pgm"
-	RandomImagePath = "/mnt/data/test_data/e75fd70bccb00024a8950a4980181ae0/"
+	FireEscapeAlarmBasePath = config.Config.FireEscape.FireBasePath
+	FireEscapeAlarmJpg      = config.Config.FireEscape.JpgPath
+	FireEscapeAlarmPgm      = config.Config.FireEscape.PgmPath
+	RandomImagePath 		= config.Config.GroundRandomImagePath
 )
 
 var ImageQueue = make(chan DetectFile, 100)
@@ -87,8 +88,6 @@ func GetImageWidthAndHeight(name string) (width, height int) {
 
 func ProduceJpgImage() {
 	path := FireEscapeAlarmBasePath
-	// 定时删除生成的文件
-	go ClearImage(path + "/jpg")
 
 	for {
 		// 消防通道报警的图片

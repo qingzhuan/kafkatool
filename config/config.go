@@ -9,6 +9,7 @@ import (
 type FireEscape struct {
 	JpgPath string
 	PgmPath string
+	FireBasePath string
 }
 
 type ImageResourcesConfig struct {
