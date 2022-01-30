@@ -40,7 +40,7 @@ func InitConfig() {
 	viper.WatchConfig()
 	viper.OnConfigChange(func(in fsnotify.Event) {
 		ReloadConfig()
-		log.Printf("监听到文件变更, 变更内容：%#v", Config)
+		log.Printf("监听到文件变更, 变更内容：%#v\n", in)
 	})
 }
 
