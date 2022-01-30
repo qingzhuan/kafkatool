@@ -124,12 +124,12 @@ func ProduceFireEscapeJpgImage() {
 }
 
 func ProduceGroundJpgImage() {
-	groundJpgImagePath := config.Config.GroundRandomImagePath
+
 	for {
+		groundJpgImagePath := config.Config.GroundRandomImagePath
 		detectFile := GetRandomImage(groundJpgImagePath)
 		GroundImageQueue <- detectFile
 	}
-
 
 }
 
