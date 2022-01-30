@@ -49,7 +49,8 @@ func GetImageList(path string) (fileList []string) {
 				path = pwd + "/"
 
 			}
-			fileList = append(fileList, strings.Join([]string{path, item.Name()}, ""))
+			// fileList = append(fileList, strings.Join([]string{path, item.Name()}, ""))
+			fileList = append(fileList, filepath.Join(path, item.Name()))
 		}
 	}
 	return
