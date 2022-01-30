@@ -8,20 +8,22 @@ import (
 )
 
 type FireEscape struct {
-	JpgPath string
-	PgmPath string
-	FireBasePath string
+	JpgPath                       string
+	PgmPath                       string
+	FireBasePath                  string
+	CarImageContinueTime          int
+	GroundRandomImageContinueTime int
 }
 
 type ImageResourcesConfig struct {
 	GroundRandomImagePath string
-	FireEscape FireEscape
-	ElevatorImagePath string
+	FireEscape            FireEscape
+	ElevatorImagePath     string
 }
 
 var Config = &ImageResourcesConfig{}
 
-func InitConfig(){
+func InitConfig() {
 
 	viper.SetConfigFile("./config.yml")
 	err := viper.ReadInConfig()
@@ -50,4 +52,3 @@ func ReloadConfig() {
 		log.Printf("监听到文件变更, 重新加载失败，err：%#v", err)
 	}
 }
-

@@ -96,7 +96,7 @@ func ProduceFireEscapeJpgImage() {
 
 	for {
 		// 消防通道报警的图片
-		for i := 0; i < 60 * 5; i++ {
+		for i := 0; i < config.Config.FireEscape.CarImageContinueTime; i++ {
 			fileName := common.MD5Value(strconv.Itoa(time.Now().Nanosecond())) + ".jpg"
 			dstName := filepath.Join(jpgPath, fileName)
 			readFile, err := ioutil.ReadFile(config.Config.FireEscape.JpgPath) // 能产生报警的图片
@@ -116,7 +116,7 @@ func ProduceFireEscapeJpgImage() {
 			FireEscapeImageQueue <- detectFile
 		}
 		// 其他随机图片，用于智能巡查掉报警
-		for i := 0; i < 60 * 5; i++ {
+		for i := 0; i < config.Config.FireEscape.GroundRandomImageContinueTime; i++ {
 			detectFile := <- GroundImageQueue
 			FireEscapeImageQueue <- detectFile
 		}

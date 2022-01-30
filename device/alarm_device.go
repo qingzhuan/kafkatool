@@ -7,6 +7,11 @@ type OnlineDeviceManager struct {
 	OnlineDevice map[string]*Device
 }
 
+type RunningDevice struct {
+
+}
+
+
 func NewOnlineDeviceManager() *OnlineDeviceManager{
 	return &OnlineDeviceManager{
 		OnlineDevice: map[string]*Device{},

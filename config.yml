@@ -4,5 +4,7 @@ FireEscape:
   FireBasePath: /mnt/data/test_data/car
   JpgPath: /mnt/data/test_data/car/image_1643158302.308963776.jpg
   PgmPath: /mnt/data/test_data/car/image_1643158302.308963776.pgm
+  CarImageContinueTime: 300
+  GroundRandomImageContinueTime: 300
 
 ElevatorImagePath: /mnt/data/test_data/elevatorimage
