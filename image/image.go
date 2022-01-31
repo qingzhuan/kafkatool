@@ -26,7 +26,7 @@ var (
 )
 
 var FireEscapeImageQueue = make(chan DetectFile, 10)
-var GroundImageQueue = make(chan DetectFile, 500)
+var GroundImageQueue = make(chan DetectFile, 10) // 容量不能太大了，不能修改路径或增加/删除图片后不能立即生效
 
 type DetectFile struct {
 	PGM string
