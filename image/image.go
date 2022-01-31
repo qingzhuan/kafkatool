@@ -57,6 +57,7 @@ func GetImageList(path string) (fileList []string) {
 }
 
 func GetRandomImage(path string) (detectFile DetectFile) {
+
 	imageList := GetImageList(path)
 	lenght := len(imageList)
 	if lenght < 1 {
@@ -67,6 +68,7 @@ func GetRandomImage(path string) (detectFile DetectFile) {
 	intn := rand.Intn(lenght)
 	detectFile.JPG = imageList[intn]
 	detectFile.PGM = imageList[intn] + ".pgm"
+	log.Printf("get random image [%+v] from %s\n",detectFile, path)
 	return
 }
 
