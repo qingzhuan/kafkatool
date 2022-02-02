@@ -15,10 +15,17 @@ type FireEscape struct {
 	GroundRandomImageContinueTime int
 }
 
+type ElevatorImageConfig struct {
+	ElevatorAlarmImagePath          string
+	ElevatorRandomImagePath         string
+	ElevatorAlarmImageContinueTime  int
+	ElevatorRandomImageContinueTime int
+}
+
 type ImageResourcesConfig struct {
 	GroundRandomImagePath string
 	FireEscape            FireEscape
-	ElevatorImagePath     string
+	ElevatorImageConfig   ElevatorImageConfig
 }
 
 var Config = &ImageResourcesConfig{}

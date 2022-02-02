@@ -22,12 +22,13 @@ var (
 	FireEscapeAlarmBasePath = config.Config.FireEscape.FireBasePath
 	FireEscapeAlarmJpg      = config.Config.FireEscape.JpgPath
 	FireEscapeAlarmPgm      = config.Config.FireEscape.PgmPath
-	RandomImagePath 		= config.Config.GroundRandomImagePath
+	RandomImagePath         = config.Config.GroundRandomImagePath
 )
 
 /* 容量不能太大了，不能修改路径或增加/删除图片后不能立即生效*/
 // 消防通道可以报警的image 队列
 var FireEscapeImageQueue = make(chan DetectFile, 10)
+
 // 地上随机的image 队列
 var GroundImageQueue = make(chan DetectFile, 10)
 
@@ -35,7 +36,10 @@ var GroundImageQueue = make(chan DetectFile, 10)
 var ElevatorAlarmImageQueue = make(chan DetectFile, 10)
 
 //电梯场景其他的图片
-var ElevatorImageQueue = make(chan DetectFile, 10)
+var ElevatorRandomImageQueue = make(chan DetectFile, 10)
+
+// 总的电梯场景图片队列，ElevatorAlarmImageQueue和ElevatorRandomImageQueue往这个队列中添加图片
+var ElevatorImageQueue = make(chan DetectFile, 30)
 
 type DetectFile struct {
 	PGM string
@@ -44,7 +48,7 @@ type DetectFile struct {
 
 type ProduceImageParameter struct {
 	ImageQueue chan DetectFile
-	Path string
+	Path       string
 }
 
 func GetImageList(path string) (fileList []string) {
@@ -82,7 +86,7 @@ func GetRandomImage(path string) (detectFile DetectFile) {
 	intn := rand.Intn(lenght)
 	detectFile.JPG = imageList[intn]
 	detectFile.PGM = imageList[intn] + ".pgm"
-	log.Printf("get random image [%+v] from %s\n",detectFile, path)
+	log.Printf("get random image [%+v] from %s\n", detectFile, path)
 	return
 }
 
@@ -134,18 +138,33 @@ func ProduceFireEscapeJpgImage() {
 		}
 		// 其他随机图片，用于智能巡查掉报警
 		for i := 0; i < config.Config.FireEscape.GroundRandomImageContinueTime; i++ {
-			detectFile := <- GroundImageQueue
+			detectFile := <-GroundImageQueue
 			FireEscapeImageQueue <- detectFile
 		}
 	}
 }
 
-func ProduceGroundJpgImage() {
+func ProduceElevatorSceneImage() {
 
 	for {
-		groundJpgImagePath := config.Config.GroundRandomImagePath
-		detectFile := GetRandomImage(groundJpgImagePath)
-		GroundImageQueue <- detectFile
+		// 生产报警图片
+		for i := 0; i < config.Config.ElevatorImageConfig.ElevatorAlarmImageContinueTime; i++ {
+			alarmImage := <-ElevatorAlarmImageQueue
+			ElevatorImageQueue <- alarmImage
+		}
+		// 生产随机图片
+		for i := 0; i < config.Config.ElevatorImageConfig.ElevatorRandomImageContinueTime; i++ {
+			alarmImage := <-ElevatorRandomImageQueue
+			ElevatorImageQueue <- alarmImage
+		}
+	}
+}
+
+func ProduceJpgImage(parameter *ProduceImageParameter) {
+
+	for {
+		detectFile := GetRandomImage(parameter.Path)
+		parameter.ImageQueue <- detectFile
 	}
 
 }
@@ -163,7 +182,7 @@ func ClearImage(path string) {
 		}
 
 		for _, info := range infos {
-			if info.ModTime().Add(time.Minute * 10).Unix() < time.Now().Unix() && strings.HasSuffix(info.Name(), ".jpg") {
+			if info.ModTime().Add(time.Minute*10).Unix() < time.Now().Unix() && strings.HasSuffix(info.Name(), ".jpg") {
 				fileName := path + "/" + info.Name()
 				err := os.Remove(fileName)
 				if err != nil {
@@ -178,8 +197,3 @@ func ClearImage(path string) {
 
 	}
 }
-
-func ProduceElevatorAlarmImage() {
-
-}
-

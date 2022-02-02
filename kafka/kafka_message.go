@@ -10,6 +10,7 @@ import (
 	"kafkatool/constant"
 	"kafkatool/device"
 	images "kafkatool/image"
+	"log"
 	"strconv"
 	"time"
 )
@@ -32,7 +33,7 @@ type Message struct {
 	Timestamps  int64                    `json:"timestamps"`
 }
 
-func BuildKafkaMessage(communityId, deviceId string) (msg Message){
+func BuildKafkaMessage(communityId, deviceId string, imageQueue chan images.DetectFile) (msg Message){
 	msg = Message{
 		CommunityId: communityId,
 		DeviceId:    deviceId,
@@ -42,7 +43,8 @@ func BuildKafkaMessage(communityId, deviceId string) (msg Message){
 		Payload:     map[string]interface{}{},
 		Pts:         0,
 	}
-	detectFile := <-images.FireEscapeImageQueue
+	//detectFile := <-images.FireEscapeImageQueue
+	detectFile := <- imageQueue
 	pgm := detectFile.PGM
 	width, height := images.GetImageWidthAndHeight(detectFile.JPG)
 	msg.JpgPath = detectFile.JPG
@@ -70,7 +72,12 @@ func ForeverWriterCarInfoMsg() {
 	// 生产消防通道需要的图片jpg+pgm
 	go images.ProduceFireEscapeJpgImage()
 	// 生产地上场景的图片（从某一个目录随机获取一张图片）
-	go images.ProduceGroundJpgImage()
+	parameter := &images.ProduceImageParameter{
+		ImageQueue: images.GroundImageQueue,
+		Path:       config.Config.GroundRandomImagePath,
+	}
+
+	go images.ProduceJpgImage(parameter)
 	// 定时删除生成的jpg
 	go images.ClearImage(config.Config.FireEscape.FireBasePath + "/jpg")
 
@@ -79,12 +86,43 @@ func ForeverWriterCarInfoMsg() {
 	//onlineDevice = deviceManager.GetOneOnlineDevice(constant.GroundSceneType)
 	fmt.Println("onlineDevice", deviceManager.OnlineDevice)
 	for {
-		msg := BuildKafkaMessage(onlineDevice.CommunityId, onlineDevice.DeviceId)
+		msg := BuildKafkaMessage(onlineDevice.CommunityId, onlineDevice.DeviceId, images.FireEscapeImageQueue)
 		SendKafkaMessage(w, msg)
 		time.Sleep(time.Second * 1)
 	}
 }
 
 func ForeverWriterElevatorMsg()  {
+	// 生产电梯场景可以报警的图片
+	produceElevatorAlarmImagePara := &images.ProduceImageParameter{
+		ImageQueue: images.ElevatorAlarmImageQueue,
+		Path:       config.Config.ElevatorImageConfig.ElevatorAlarmImagePath,
+	}
+	go images.ProduceJpgImage(produceElevatorAlarmImagePara)
+
+	// 随机生产电梯场景图片
+	produceElevatorRandomImagePara := &images.ProduceImageParameter{
+		ImageQueue: images.ElevatorRandomImageQueue,
+		Path:       config.Config.ElevatorImageConfig.ElevatorRandomImagePath,
+	}
+	go images.ProduceJpgImage(produceElevatorRandomImagePara)
+
+	// 生产总的报警图片
+	go images.ProduceElevatorSceneImage()
+
+	// 获取设备
+	onlineDevice := deviceManager.GetOneOnlineDevice(constant.ElevatorSceneType)
+	if onlineDevice == nil {
+		log.Println("not found elevator type device")
+		return
+	}
+
+	w := KafkaHandler.TopicWriterHandler[constant.ElevatorDecodeTopic]
+	for {
+		msg := BuildKafkaMessage(onlineDevice.CommunityId, onlineDevice.DeviceId, images.ElevatorImageQueue)
+		SendKafkaMessage(w, msg)
+		time.Sleep(time.Second * 1)
+	}
+
 	
 }

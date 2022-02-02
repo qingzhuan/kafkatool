@@ -7,6 +7,7 @@ const (
 	ElevatorDecodeTopic = "decoder-topic-elevator-0"
 	InfoDecodeTopic     = "decoder-topic-infer-0"
 	GroundSceneType     = "ground"
+	ElevatorSceneType   = "elevator"
 )
 
 
