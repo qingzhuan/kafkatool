@@ -84,3 +84,7 @@ func ForeverWriterCarInfoMsg() {
 		time.Sleep(time.Second * 1)
 	}
 }
+
+func ForeverWriterElevatorMsg()  {
+	
+}

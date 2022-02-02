@@ -25,12 +25,26 @@ var (
 	RandomImagePath 		= config.Config.GroundRandomImagePath
 )
 
+/* 容量不能太大了，不能修改路径或增加/删除图片后不能立即生效*/
+// 消防通道可以报警的image 队列
 var FireEscapeImageQueue = make(chan DetectFile, 10)
-var GroundImageQueue = make(chan DetectFile, 10) // 容量不能太大了，不能修改路径或增加/删除图片后不能立即生效
+// 地上随机的image 队列
+var GroundImageQueue = make(chan DetectFile, 10)
+
+// 电梯场景可以报警的图片
+var ElevatorAlarmImageQueue = make(chan DetectFile, 10)
+
+//电梯场景其他的图片
+var ElevatorImageQueue = make(chan DetectFile, 10)
 
 type DetectFile struct {
 	PGM string
 	JPG string
+}
+
+type ProduceImageParameter struct {
+	ImageQueue chan DetectFile
+	Path string
 }
 
 func GetImageList(path string) (fileList []string) {
@@ -164,3 +178,8 @@ func ClearImage(path string) {
 
 	}
 }
+
+func ProduceElevatorAlarmImage() {
+
+}
+

@@ -11,5 +11,6 @@ func init() {
 
 func main() {
 	go kafkahandler.ForeverWriterCarInfoMsg()
+	go kafkahandler.ForeverWriterElevatorMsg()
 	select {}
 }
