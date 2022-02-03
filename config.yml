@@ -9,6 +9,6 @@ FireEscape:
 
 ElevatorImageConfig:
   ElevatorAlarmImagePath: /mnt/data/test_data/elevatorimage
-  ElevatorRandomImagePath: /mnt/data/test_data/elevatorimage
+  ElevatorRandomImagePath: /mnt/data/test_data/elevatorimage/randomimage
   ElevatorAlarmImageContinueTime: 3
   ElevatorRandomImageContinueTime: 600
