@@ -48,7 +48,7 @@ type DetectFile struct {
 
 type ProduceImageParameter struct {
 	ImageQueue chan DetectFile
-	Path       string
+	Path       *string
 }
 
 func GetImageList(path string) (fileList []string) {
@@ -74,9 +74,9 @@ func GetImageList(path string) (fileList []string) {
 	return
 }
 
-func GetRandomImage(path string) (detectFile DetectFile) {
+func GetRandomImage(path *string) (detectFile DetectFile) {
 
-	imageList := GetImageList(path)
+	imageList := GetImageList(*path)
 	lenght := len(imageList)
 	if lenght < 1 {
 		log.Printf("从%s获取图片异常\n", path)

@@ -74,7 +74,7 @@ func ForeverWriterCarInfoMsg() {
 	// 生产地上场景的图片（从某一个目录随机获取一张图片）
 	parameter := &images.ProduceImageParameter{
 		ImageQueue: images.GroundImageQueue,
-		Path:       config.Config.GroundRandomImagePath,
+		Path:       &config.Config.GroundRandomImagePath,
 	}
 
 	go images.ProduceJpgImage(parameter)
@@ -96,14 +96,14 @@ func ForeverWriterElevatorMsg()  {
 	// 生产电梯场景可以报警的图片
 	produceElevatorAlarmImagePara := &images.ProduceImageParameter{
 		ImageQueue: images.ElevatorAlarmImageQueue,
-		Path:       config.Config.ElevatorImageConfig.ElevatorAlarmImagePath,
+		Path:       &config.Config.ElevatorImageConfig.ElevatorAlarmImagePath,
 	}
 	go images.ProduceJpgImage(produceElevatorAlarmImagePara)
 
 	// 随机生产电梯场景图片
 	produceElevatorRandomImagePara := &images.ProduceImageParameter{
 		ImageQueue: images.ElevatorRandomImageQueue,
-		Path:       config.Config.ElevatorImageConfig.ElevatorRandomImagePath,
+		Path:       &config.Config.ElevatorImageConfig.ElevatorRandomImagePath,
 	}
 	go images.ProduceJpgImage(produceElevatorRandomImagePara)
 
