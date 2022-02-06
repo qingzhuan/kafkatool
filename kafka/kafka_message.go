@@ -33,7 +33,7 @@ type Message struct {
 	Timestamps  int64                    `json:"timestamps"`
 }
 
-func BuildKafkaMessage(communityId, deviceId string, imageQueue chan images.DetectFile) (msg Message){
+func BuildKafkaMessage(communityId, deviceId string, imageQueue <-chan images.DetectFile) (msg Message){
 	msg = Message{
 		CommunityId: communityId,
 		DeviceId:    deviceId,
@@ -58,14 +58,16 @@ func BuildKafkaMessage(communityId, deviceId string, imageQueue chan images.Dete
 
 func SendKafkaMessage(w *kafka.Writer, msg Message) {
 	bytes, err2 := json.Marshal(msg)
-	fmt.Println(string(bytes))
+	log.Println(string(bytes))
 	if err2 != nil {
 		return
 	}
 	message := kafka.Message{}
 	message.Value = bytes
 	err := w.WriteMessages(context.Background(), message)
-	fmt.Printf("err:%#v \n", err)
+	if err != nil {
+		log.Printf("send kafka message err:%#v \n", err)
+	}
 }
 
 func ForeverWriterCarInfoMsg() {
